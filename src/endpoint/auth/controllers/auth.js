@@ -11,13 +11,13 @@ const register = async (req, res) => {
 
     const do_register = async () => {
         const encrypted_password = await encrpyt_one_way(password)
-        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role]
+        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role.toUpperCase()]
 
         const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
             if (!error) {
-                const access_token = create_access_token(id_user, role);
-                const refresh_token = create_refresh_token(id_user, role)
+                const access_token = create_access_token(id_user, role.toUpperCase());
+                const refresh_token = create_refresh_token(id_user, role.toUpperCase())
 
                 res.cookie("refreshToken", refresh_token, {
                     expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -79,8 +79,8 @@ const login = async (req, res) => {
                 const hashPassword = await pairing_one_way(password.toString(), result[0].password)
 
                 if (hashPassword) {
-                    const access_token = create_access_token(result[0].id_user, result[0].role);
-                    const refresh_token = create_refresh_token(result[0].id_user, result[0].role)
+                    const access_token = create_access_token(result[0].id_user, result[0].role.toUpperCase());
+                    const refresh_token = create_refresh_token(result[0].id_user, result[0].role.toUpperCase())
 
                     res.cookie("refreshToken", refresh_token, {
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -103,7 +103,7 @@ const login = async (req, res) => {
                             no_rekening: result[0].no_rekening,
                             status_perkawinan: result[0].status_perkawinan,
                             email: result[0].email,
-                            role: result[0].role
+                            role: result[0].role.toUpperCase()
                         },
                         access_token
                     })
