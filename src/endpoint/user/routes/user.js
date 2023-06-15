@@ -6,7 +6,7 @@ const user = express.Router()
 
 user.get('/', admins, controller.user_list)
 
-// user.put('/:id_user', admins, controller.testing)
+user.put('/:id_user', admins, controller.update_user)
 user.delete('/:id_user', admins, controller.delete_user)
 
 
