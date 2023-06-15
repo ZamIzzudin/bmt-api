@@ -5,20 +5,19 @@ import conn from '../../../config/index.js'
 
 const register = async (req, res) => {
     const id_user = uid(16)
-    const { nama, no_telp, asal_prov, asal_kab, email, password } = req.body
+    const { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role } = req.body
 
-    const query_find = 'SELECT * FROM tb_user WHERE email = ?'
+    const query_find = 'SELECT * FROM user WHERE email = ?'
 
     const do_register = async () => {
         const encrypted_password = await encrpyt_one_way(password)
-        const payload = [id_user, nama, no_telp, asal_prov, asal_kab, "not defined", email, encrypted_password]
+        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role]
 
-        const query_regist = 'INSERT INTO tb_user (id_user, nama, no_telp, asal_prov, asal_kab, foto_profile, email, password) VALUE (?,?,?,?,?,?,?,?)'
-
+        const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
             if (!error) {
-                const access_token = create_access_token(id_user, 'User');
-                const refresh_token = create_refresh_token(id_user, 'User')
+                const access_token = create_access_token(id_user, role);
+                const refresh_token = create_refresh_token(id_user, role)
 
                 res.cookie("refreshToken", refresh_token, {
                     expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -29,20 +28,12 @@ const register = async (req, res) => {
 
                 res.status(200).json({
                     status: 200,
-                    message: `Success Register New User with email : ${email}`,
-                    data: {
-                        id: result[0].id_user,
-                        nama: result[0].nama,
-                        no_telp: result[0].no_telp,
-                        email: result[0].email,
-                        asal_kab: result[0].asal_kab,
-                        asal_prov: result[0].asal_prov,
-                        foto_profile: result[0].foto_profile,
-                        deskripsi: result[0].deskripsi
-                    },
+                    message: `Success Register New Account with email : ${email}`,
+                    data: { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role },
                     access_token
                 })
             } else {
+                console.log(error)
                 res.status(404).json({
                     status: 404,
                     message: 'failed',
@@ -50,7 +41,6 @@ const register = async (req, res) => {
                 })
             }
         }
-
         conn.query(query_regist, payload, handle_register)
     }
 
@@ -81,7 +71,7 @@ const login = async (req, res) => {
     const { email, password } = req.body
     const payload = [email]
 
-    const query = 'SELECT * FROM tb_user WHERE email = ?'
+    const query = 'SELECT * FROM user WHERE email = ?'
 
     const handle_response = async (err, result) => {
         if (!err) {
@@ -89,8 +79,8 @@ const login = async (req, res) => {
                 const hashPassword = await pairing_one_way(password.toString(), result[0].password)
 
                 if (hashPassword) {
-                    const access_token = create_access_token(result[0].id_user, 'User');
-                    const refresh_token = create_refresh_token(result[0].id_user, 'User')
+                    const access_token = create_access_token(result[0].id_user, result[0].role);
+                    const refresh_token = create_refresh_token(result[0].id_user, result[0].role)
 
                     res.cookie("refreshToken", refresh_token, {
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -103,14 +93,17 @@ const login = async (req, res) => {
                         status: 200,
                         message: `Success Login As User ${email}`,
                         data: {
-                            id: result[0].id_user,
+                            username: result[0].username,
                             nama: result[0].nama,
-                            no_telp: result[0].no_telp,
+                            nik: result[0].nik,
+                            jenis_kelamin: result[0].jenis_kelamin,
+                            no_hp: result[0].no_hp,
+                            alamat: result[0].alamat,
+                            pekerjaan: result[0].pekerjaan,
+                            no_rekening: result[0].no_rekening,
+                            status_perkawinan: result[0].status_perkawinan,
                             email: result[0].email,
-                            asal_kab: result[0].asal_kab,
-                            asal_prov: result[0].asal_prov,
-                            foto_profile: result[0].foto_profile,
-                            deskripsi: result[0].deskripsi
+                            role: result[0].role
                         },
                         access_token
                     })
