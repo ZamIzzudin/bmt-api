@@ -5,15 +5,16 @@ import conn from '../../../config/index.js'
 
 const register = async (req, res) => {
     const id_user = uid(16)
+    const date = Date.now()
     const { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role } = req.body
 
     const query_find = 'SELECT * FROM user WHERE email = ?'
 
     const do_register = async () => {
         const encrypted_password = await encrpyt_one_way(password)
-        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role.toUpperCase()]
+        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role.toUpperCase(), date]
 
-        const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
+        const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role, created_at) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
             if (!error) {
                 const access_token = create_access_token(id_user, role.toUpperCase());
