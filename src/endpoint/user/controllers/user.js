@@ -122,7 +122,7 @@ const delete_user = async (req, res) => {
         }
     }
 
-    handle_check_data = (err, data) => {
+    const handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
                 connection.getConnection(async (err, conn) => {
