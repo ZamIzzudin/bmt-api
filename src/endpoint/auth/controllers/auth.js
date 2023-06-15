@@ -183,9 +183,44 @@ const refresh_token = async (req, res) => {
     }
 }
 
+
+const testing = async (req, res) => {
+
+    const query = 'SELECT * FROM user'
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            if (result.length > 0) {
+                res.json({
+                    status: 200,
+                    message: `Success Get Users}`,
+                    data: result
+                })
+
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: 'failed',
+                    info: "User Isn't Registered"
+                })
+            }
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    await conn.query(query, [], handle_response)
+}
+
+
 const controller = {
     register,
     login,
+    testing,
     refresh_token
 }
 
