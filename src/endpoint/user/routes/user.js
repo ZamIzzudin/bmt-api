@@ -6,9 +6,8 @@ const user = express.Router()
 
 user.get('/', admins, controller.user_list)
 
-// user.get('/:id_user', admins, controller.testing)
-// user.put('/:id_user', admins, controller.testing)
-// user.delete('/:id_user', admins, controller.testing)
+user.put('/:id_user', admins, controller.testing)
+user.delete('/:id_user', admins, controller.testing)
 
 
 export default user

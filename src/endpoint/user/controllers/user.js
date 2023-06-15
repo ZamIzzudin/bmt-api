@@ -80,9 +80,71 @@ const user_list = async (req, res) => {
     await conn.query(query, [], handle_response)
 }
 
+const delete_user = async (req, res) => {
+    const { id_user } = req.params
+    const { type } = req.query
+    const { authorization: raw_token } = req.headers
+
+    const token = raw_token.split(' ')[1]
+
+    const query = 'DELETE FROM user WHERE id_user = ?'
+    const query_find = 'SELECT * FROM user WHERE id_user = ?'
+
+    const payload = [id_user]
+
+    verify_access_token(token, async (error, result) => {
+        if (!error) {
+            if (result.role.toLowerCase() === 'admin' && type === 'pengelola') {
+                return res.status(405).json({
+                    status: 405,
+                    message: 'unathorized',
+                    info: 'you dont have valid access'
+                })
+            }
+        }
+    })
+
+    const handle_delete_user = (err, result) => {
+        if (!err) {
+            return res.status(200).json({
+                status: 200,
+                message: 'Success Delete User',
+            })
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    await conn.query(query_find, payload, (err, data) => {
+        if (!err) {
+            if (data.length > 0) {
+                conn.query(query, payload, handle_delete_user)
+            } else {
+                return res.status(400).json({
+                    status: 400,
+                    message: 'Data Not Found',
+                    info: 'Cannot find data with this ID'
+                })
+            }
+
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'error',
+                info: 'internal server error'
+            })
+        }
+    })
+}
+
 
 const controller = {
-    user_list
+    user_list,
+    delete_user
 }
 
 export default controller
