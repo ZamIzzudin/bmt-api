@@ -1,5 +1,6 @@
 import express from "express"
 import auth_user from "./auth/routes/auth.js"
+import user from "./user/routes/user.js"
 
 
 const endpoint = express.Router()
@@ -14,6 +15,7 @@ endpoint.get('/', (req, res) => { //welcome response endpoint
 })
 
 endpoint.use('/auth', auth_user)
+endpoint.use('/user', user)
 
 endpoint.get('*', (req, res) => { //error response endpoint
     res.send({

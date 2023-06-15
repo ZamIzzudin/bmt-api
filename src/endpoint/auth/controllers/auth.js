@@ -29,7 +29,7 @@ const register = async (req, res) => {
                 res.status(200).json({
                     status: 200,
                     message: `Success Register New Account with email : ${email}`,
-                    data: { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role },
+                    data: { username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role },
                     access_token
                 })
             } else {
