@@ -3,7 +3,7 @@ import key from '../state/index.js'
 
 const { DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT } = key //configuration
 
-const conn = mysql.createConnection({
+const connection = mysql.createPool({
     connectionLimit: 10,
     host: DB_HOST,
     user: DB_USER,
@@ -12,12 +12,4 @@ const conn = mysql.createConnection({
     port: DB_PORT,
 })
 
-conn.connect((err) => {
-    if (err) {
-        console.log('error connecting : ' + err.stack);
-        return;
-    }
-    console.log('DB success connected');
-});
-
-export default conn
+export default connection

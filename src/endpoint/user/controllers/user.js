@@ -1,5 +1,5 @@
 import { verify_access_token } from '../../../utils/jwt.js'
-import conn from '../../../config/index.js'
+import connection from '../../../config/index.js'
 
 const user_list = async (req, res) => {
     const { type } = req.query
@@ -77,7 +77,10 @@ const user_list = async (req, res) => {
         }
     }
 
-    await conn.query(query, [], handle_response)
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, [], handle_response)
+        conn.release();
+    })
 }
 
 const delete_user = async (req, res) => {
@@ -119,10 +122,13 @@ const delete_user = async (req, res) => {
         }
     }
 
-    await conn.query(query_find, payload, (err, data) => {
+    handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
-                conn.query(query, payload, handle_delete_user)
+                connection.getConnection(async (err, conn) => {
+                    conn.query(query, payload, handle_delete_user)
+                    conn.release();
+                })
             } else {
                 return res.status(400).json({
                     status: 400,
@@ -138,6 +144,12 @@ const delete_user = async (req, res) => {
                 info: 'internal server error'
             })
         }
+    }
+
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query_find, payload, handle_check_data)
+        conn.release();
     })
 }
 

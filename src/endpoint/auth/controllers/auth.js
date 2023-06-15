@@ -1,7 +1,7 @@
 import { uid } from 'uid';
 import { encrpyt_one_way, pairing_one_way } from '../../../utils/crypt.js'
 import { create_access_token, create_refresh_token, verify_refresh_token } from '../../../utils/jwt.js'
-import conn from '../../../config/index.js'
+import connection from '../../../config/index.js'
 
 const register = async (req, res) => {
     const id_user = uid(16)
@@ -42,7 +42,10 @@ const register = async (req, res) => {
                 })
             }
         }
-        conn.query(query_regist, payload, handle_register)
+        connection.getConnection(async (err, conn) => {
+            await conn.query(query_regist, payload, handle_register)
+            conn.release();
+        })
     }
 
     const handle_check_exist = (err, result) => {
@@ -65,7 +68,10 @@ const register = async (req, res) => {
         }
     }
 
-    await conn.query(query_find, [email], handle_check_exist)
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query_find, [email], handle_check_exist)
+        conn.release();
+    })
 }
 
 const login = async (req, res) => {
@@ -132,7 +138,10 @@ const login = async (req, res) => {
         }
     }
 
-    await conn.query(query, payload, handle_response)
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, payload, handle_response)
+        conn.release();
+    })
 }
 
 const refresh_token = async (req, res) => {
@@ -186,43 +195,9 @@ const refresh_token = async (req, res) => {
 }
 
 
-const testing = async (req, res) => {
-
-    const query = 'SELECT * FROM user'
-
-    const handle_response = async (err, result) => {
-        if (!err) {
-            if (result.length > 0) {
-                res.json({
-                    status: 200,
-                    message: `Success Get Users}`,
-                    data: result
-                })
-
-            } else {
-                res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: "User Isn't Registered"
-                })
-            }
-        } else {
-            res.status(404).json({
-                status: 404,
-                message: 'failed',
-                info: err
-            })
-        }
-    }
-
-    await conn.query(query, [], handle_response)
-}
-
-
 const controller = {
     register,
     login,
-    testing,
     refresh_token
 }
 
