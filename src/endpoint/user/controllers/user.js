@@ -30,7 +30,7 @@ const user_list = async (req, res) => {
         }
     })
 
-    const query = 'SELECT id_user, username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role FROM user WHERE ' + condition
+    const query = 'SELECT id_user, created_at,username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role FROM user WHERE ' + condition
 
     const handle_response = async (err, result) => {
         if (!err) {

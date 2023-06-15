@@ -14,7 +14,7 @@ const register = async (req, res) => {
         const encrypted_password = await encrpyt_one_way(password)
         const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role.toUpperCase(), date]
 
-        const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role, created_at) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
+        const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role, created_at) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
             if (!error) {
                 const access_token = create_access_token(id_user, role.toUpperCase());
@@ -30,7 +30,7 @@ const register = async (req, res) => {
                 res.status(200).json({
                     status: 200,
                     message: `Success Register New Account with email : ${email}`,
-                    data: { id_user, username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role },
+                    data: { id_user, username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role, created_at: date },
                     access_token
                 })
             } else {
@@ -110,6 +110,7 @@ const login = async (req, res) => {
                             pekerjaan: result[0].pekerjaan,
                             no_rekening: result[0].no_rekening,
                             status_perkawinan: result[0].status_perkawinan,
+                            created_at: result[0].created_at,
                             email: result[0].email,
                             role: result[0].role.toUpperCase()
                         },
