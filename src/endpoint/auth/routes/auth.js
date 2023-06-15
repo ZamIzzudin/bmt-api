@@ -6,7 +6,6 @@ const auth_user = express.Router()
 
 auth_user.post('/register', controller.register)
 auth_user.post('/login', controller.login)
-auth_user.get('/test', controller.testing)
 
 auth_user.get('/refresh', is_login, controller.refresh_token)
 
