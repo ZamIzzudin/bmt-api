@@ -4,7 +4,12 @@ import connection from '../../../config/index.js'
 import { uid } from 'uid';
 
 async function uploadImage(path) {
-    const data = await cloudinary.uploader.upload(foto_ktp.path)
+    const data = await cloudinary.uploader.upload(path)
+    return data.public_id
+}
+
+async function deleteImage(path) {
+    const data = await cloudinary.uploader.destroy(path)
     return data.public_id
 }
 
