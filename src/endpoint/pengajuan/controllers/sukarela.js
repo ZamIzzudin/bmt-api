@@ -156,7 +156,7 @@ const approve_pengajuan = async (req, res) => {
 
     let query = 'UPDATE pengajuan SET approved_at = ?, status_pengajuan = ? WHERE id_pengajuan = ?'
 
-    const query_find = 'SELECT * FROM pengajuan WHERE id_pengajuan = ?'
+    const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
 
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {

@@ -12,7 +12,10 @@ const key = {
     DB_USER: process.env.DB_USER,
     DB_PASSWORD: process.env.DB_PASSWORD,
     DB_NAME: process.env.DB_NAME,
-    DB_PORT: process.env.DB_PORT
+    DB_PORT: process.env.DB_PORT,
+    CLOUD_NAME: process.env.CLOUD_NAME,
+    API_KEY: process.env.API_KEY,
+    API_SECRET: process.env.API_SECRET,
 }
 
 // PRODUCTION KEY
