@@ -5,12 +5,11 @@ import { uid } from 'uid';
 
 async function uploadImage(path) {
     const data = await cloudinary.uploader.upload(path)
-    return data.public_id
+    return JSON.stringify({ public_id: data.public_id, url: data.url })
 }
 
 async function deleteImage(path) {
-    const data = await cloudinary.uploader.destroy(path)
-    return data.public_id
+    await cloudinary.uploader.destroy(path)
 }
 
 const pengajuan_list = async (req, res) => {
@@ -117,11 +116,36 @@ const create_pengajuan = async (req, res) => {
 
 const update_pengajuan = async (req, res) => {
     const { id_pengajuan } = req.params
-    const { produk_simpanan, setoran_awal, id_nasabah } = req.body
+    const { produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah } = req.body
+    const { foto_ktp = null, foto_kk = null, dokumen_rab = null } = req.files
 
-    var payload = [produk_simpanan, setoran_awal, id_nasabah, id_pengajuan]
+    const duplicate = []
+    var payload = [produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah]
+    let query = 'UPDATE pengajuan SET produk_pengajuan = ?, durasi = ?, nominal_awal = ?, nominal_akhir = ?, id_nasabah = ?'
 
-    let query = 'UPDATE pengajuan SET produk_pengajuan = ?, nominal_awal = ?, id_nasabah = ? WHERE id_pengajuan = ?'
+    if (foto_ktp != null) {
+        const url_ktp = await uploadImage(foto_ktp[0].path)
+        payload.push(url_ktp)
+        duplicate.push('attach_ktp')
+        query = query + ', attach_ktp = ?'
+    }
+
+    if (foto_kk != null) {
+        const url_ktp = await uploadImage(foto_kk[0].path)
+        payload.push(url_ktp)
+        duplicate.push('attach_kk')
+        query = query + ', attach_kk = ?'
+    }
+
+    if (dokumen_rab != null) {
+        const url_ktp = await uploadImage(dokumen_rab[0].path)
+        payload.push(url_ktp)
+        duplicate.push('attach_lainnya')
+        query = query + ', attach_lainnya = ?'
+    }
+
+    payload.push(id_pengajuan)
+    query = query + ' WHERE id_pengajuan = ?'
 
     const query_find = 'SELECT * FROM pengajuan WHERE id_pengajuan = ?'
 
@@ -143,6 +167,10 @@ const update_pengajuan = async (req, res) => {
     const handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
+                duplicate.forEach(each => {
+                    const temp = JSON.parse(data[0][each])
+                    deleteImage(temp.public_id)
+                })
                 connection.getConnection(async (err, conn) => {
                     conn.query(query, payload, handle_edit_pengajuan)
                     conn.release();
@@ -163,7 +191,6 @@ const update_pengajuan = async (req, res) => {
             })
         }
     }
-
 
     connection.getConnection(async (err, conn) => {
         await conn.query(query_find, [id_pengajuan], handle_check_data)
