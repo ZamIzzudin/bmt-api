@@ -2,6 +2,8 @@ import express from "express"
 import auth_user from "./auth/routes/auth.js"
 import user from "./user/routes/user.js"
 import pengajuan from "./pengajuan/routes/pengajuan.js"
+import kas from "./kas/routes/kas.js"
+
 
 
 const endpoint = express.Router()
@@ -17,6 +19,7 @@ endpoint.get('/', (req, res) => { //welcome response endpoint
 
 endpoint.use('/auth', auth_user)
 endpoint.use('/user', user)
+endpoint.use('/kas', kas)
 endpoint.use('/pengajuan', pengajuan)
 
 endpoint.get('*', (req, res) => { //error response endpoint
