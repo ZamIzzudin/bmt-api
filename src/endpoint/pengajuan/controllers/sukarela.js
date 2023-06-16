@@ -205,35 +205,19 @@ const approve_pengajuan = async (req, res) => {
     })
 }
 
-const delete_user = async (req, res) => {
-    const { id_user } = req.params
-    const { type } = req.query
-    const { authorization: raw_token } = req.headers
+const delete_pengajuan = async (req, res) => {
+    const { id_pengajuan } = req.params
 
-    const token = raw_token.split(' ')[1]
+    const query = 'DELETE FROM pengajuan WHERE id_pengajuan = ?'
+    const query_find = 'SELECT * FROM pengajuan WHERE id_pengajuan = ?'
 
-    const query = 'DELETE FROM user WHERE id_user = ?'
-    const query_find = 'SELECT * FROM user WHERE id_user = ?'
+    const payload = [id_pengajuan]
 
-    const payload = [id_user]
-
-    verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'admin' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
-                })
-            }
-        }
-    })
-
-    const handle_delete_user = (err, result) => {
+    const handle_delete_pengajuan = (err, result) => {
         if (!err) {
             return res.status(200).json({
                 status: 200,
-                message: 'Success Delete User',
+                message: 'Success Delete Pegajuan',
             })
         } else {
             return res.status(404).json({
@@ -248,7 +232,7 @@ const delete_user = async (req, res) => {
         if (!err) {
             if (data.length > 0) {
                 connection.getConnection(async (err, conn) => {
-                    conn.query(query, payload, handle_delete_user)
+                    conn.query(query, payload, handle_delete_pengajuan)
                     conn.release();
                 })
             } else {
@@ -281,7 +265,7 @@ const controller = {
     create_pengajuan,
     update_pengajuan,
     approve_pengajuan,
-    delete_user
+    delete_pengajuan
 }
 
 export default controller

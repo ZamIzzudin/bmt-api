@@ -8,7 +8,7 @@ sukarela.get('/', is_login, controller.pengajuan_list)
 sukarela.post('/', nasabah, controller.create_pengajuan)
 sukarela.put('/:id_pengajuan', nasabah, controller.update_pengajuan)
 sukarela.put('/approve/:id_pengajuan', officer, controller.approve_pengajuan)
-sukarela.delete('/:id_user', controller.delete_user)
+sukarela.delete('/:id_pengajuan', controller.delete_pengajuan)
 
 
 export default sukarela
