@@ -116,7 +116,7 @@ const update_user = async (req, res) => {
         }
     })
 
-    const handle_delete_user = (err, result) => {
+    const handle_update_user = (err, result) => {
         if (!err) {
             return res.status(200).json({
                 status: 200,
@@ -157,7 +157,7 @@ const update_user = async (req, res) => {
 
 
     connection.getConnection(async (err, conn) => {
-        await conn.query(query_find, [id_user], handle_check_data)
+        await conn.query(query_find, [id_user], handle_update_user)
         conn.release();
     })
 }
