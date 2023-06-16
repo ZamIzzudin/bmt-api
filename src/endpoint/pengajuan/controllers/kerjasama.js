@@ -1,5 +1,5 @@
 import { verify_access_token } from '../../../utils/jwt.js'
-import cloudinary from '../../../utils/cloudinary .js'
+import cloudinary from '../../../utils/cloudinary.js'
 import connection from '../../../config/index.js'
 import { uid } from 'uid';
 

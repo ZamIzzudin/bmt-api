@@ -1,5 +1,5 @@
 import express from "express"
-import controller from '../controllers/sukarela.js'
+import controller from '../controllers/kerjasama.js'
 import { nasabah, is_login, officer } from '../../../middeware/access_auth.js'
 
 const kerjasama = express.Router()

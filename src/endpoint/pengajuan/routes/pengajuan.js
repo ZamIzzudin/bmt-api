@@ -6,7 +6,7 @@ import kerjasama from './kerjasama.js'
 const pengajuan = express.Router()
 
 pengajuan.use('/jualbeli', jualbeli)
-pengajuan.use('/kerjsama', kerjasama)
+pengajuan.use('/kerjasama', kerjasama)
 pengajuan.use('/sukarela', sukarela)
 
 
