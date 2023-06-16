@@ -1,5 +1,6 @@
 import { verify_access_token } from '../../../utils/jwt.js'
 import connection from '../../../config/index.js'
+import { kas_masuk } from '../../kas/controllers/function.js'
 import { uid } from 'uid';
 
 const pengajuan_list = async (req, res) => {
@@ -158,8 +159,12 @@ const approve_pengajuan = async (req, res) => {
 
     const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
 
+    const temp = null
+
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
+            const catatan = `Persetujuan Pengajuan Simpanan Sukarela Nasabah (${temp.id_nasabah})`
+            kas_masuk(temp.nominal_awal, catatan)
             return res.status(200).json({
                 status: 200,
                 message: 'Success Approve Pengajuan',

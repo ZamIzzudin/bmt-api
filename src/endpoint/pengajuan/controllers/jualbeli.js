@@ -1,6 +1,7 @@
 import { verify_access_token } from '../../../utils/jwt.js'
 import cloudinary from '../../../utils/cloudinary.js'
 import connection from '../../../config/index.js'
+import { kas_keluar } from '../../kas/controllers/function.js'
 import { uid } from 'uid';
 
 async function uploadImage(path) {
@@ -209,8 +210,12 @@ const approve_pengajuan = async (req, res) => {
 
     const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
 
+    const temp = null
+
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
+            const catatan = `Persetujuan PEngajuan Pembiayaab Jual Beli Nasabah (${temp.id_nasabah})`
+            kas_keluar(temp.nominal_awal, catatan)
             return res.status(200).json({
                 status: 200,
                 message: 'Success Approve Pengajuan',
@@ -227,6 +232,7 @@ const approve_pengajuan = async (req, res) => {
     const handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
+                temp = data[0]
                 connection.getConnection(async (err, conn) => {
                     conn.query(query, payload, handle_edit_pengajuan)
                     conn.release();
