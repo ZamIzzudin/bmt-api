@@ -1,5 +1,4 @@
 import { verify_access_token } from '../../../utils/jwt.js'
-import { encrpyt_one_way } from '../../../utils/crypt.js'
 import connection from '../../../config/index.js'
 import { uid } from 'uid';
 
@@ -31,7 +30,7 @@ const pengajuan_list = async (req, res) => {
         }
     })
 
-    const query = 'SELECT * FROM pengajuan ' + condition
+    const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
 
     const handle_response = async (err, result) => {
         if (!err) {
