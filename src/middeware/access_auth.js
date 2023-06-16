@@ -1,6 +1,6 @@
 import { verify_access_token } from '../utils/jwt.js';
 
-const user = (req, res, next) => {
+const nasabah = (req, res, next) => {
     let access_token = req.headers.authorization
     if (!access_token) {
         return res.status(401).json({
@@ -19,7 +19,7 @@ const user = (req, res, next) => {
                     message: 'failed',
                     info: 'expired token'
                 });
-            } else if (decoded.role.toLowerCase() !== 'user') {
+            } else if (decoded.role.toLowerCase() !== 'nasabah') {
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
@@ -274,4 +274,4 @@ const is_login = (req, res, next) => {
     }
 }
 
-export { user, admin, sysadmin, manager, officer, admins, is_login }
+export { nasabah, admin, sysadmin, manager, officer, admins, is_login }
