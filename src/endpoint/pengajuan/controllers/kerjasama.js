@@ -18,7 +18,7 @@ const pengajuan_list = async (req, res) => {
 
     const token = raw_token.split(' ')[1]
 
-    let condition = `WHERE tipe_pengajuan = 'KERJA SAMA' `
+    let condition = `WHERE tipe_pengajuan = 'JUAL BELI' `
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
@@ -281,6 +281,13 @@ const delete_pengajuan = async (req, res) => {
     const handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
+                const temp_ktp = JSON.parse(data[0].attach_ktp)
+                const temp_kk = JSON.parse(data[0].attach_kk)
+                const temp_lainnya = JSON.parse(data[0].attach_lainnya)
+
+                deleteImage(temp_ktp.public_id)
+                deleteImage(temp_kk.public_id)
+                deleteImage(temp_lainnya.public_id)
                 connection.getConnection(async (err, conn) => {
                     conn.query(query, payload, handle_delete_pengajuan)
                     conn.release();
