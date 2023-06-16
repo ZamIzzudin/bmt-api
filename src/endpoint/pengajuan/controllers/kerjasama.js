@@ -78,13 +78,13 @@ const create_pengajuan = async (req, res) => {
     const { produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah } = req.body
     const { foto_ktp = null, foto_kk = null, dokumen_rab = null } = req.files
 
-    const url_ktp = uploadImage(foto_ktp.path)
-    const url_kk = uploadImage(foto_kk.path)
-    const url_rab = uploadImage(dokumen_rab.path)
+    const url_ktp = await uploadImage(foto_ktp[0].path)
+    const url_kk = await uploadImage(foto_kk[0].path)
+    const url_rab = await uploadImage(dokumen_rab[0].path)
 
     var payload = [id_pengajuan, produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah, 'KERJA SAMA', url_ktp, url_kk, url_rab]
 
-    let query = 'INSERT INTO pengajuan (id_pengajuan, produk_pengajuan, durasi, nominal_awal, nominal_akhir, id_nasabah, tipe_pengajuan,attach_ktp,attach_kk,attach_lainnya) VALUES (?,?,?,?,?,?,?,?,?,?)'
+    let query = 'INSERT INTO pengajuan (id_pengajuan, produk_pengajuan, durasi, nominal_awal, nominal_akhir, id_nasabah, tipe_pengajuan, attach_ktp, attach_kk, attach_lainnya) VALUES (?,?,?,?,?,?,?,?,?,?)'
 
     if (foto_ktp == null || foto_kk == null || dokumen_rab == null) {
         return res.status(404).json({
