@@ -18,7 +18,7 @@ const pengajuan_list = async (req, res) => {
 
     const token = raw_token.split(' ')[1]
 
-    let condition = `WHERE tipe_pengajuan = 'JUAL BELI' `
+    let condition = `WHERE tipe_pengajuan = 'KERJA SAMA' `
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
