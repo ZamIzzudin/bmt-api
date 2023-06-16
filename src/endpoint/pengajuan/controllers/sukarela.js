@@ -9,7 +9,7 @@ const pengajuan_list = async (req, res) => {
 
     const token = raw_token.split(' ')[1]
 
-    let condition = `WHERE tipe_pengajuan = 'SUKARELA' `
+    let condition = `WHERE pengajuan.tipe_pengajuan = 'SUKARELA' `
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
@@ -32,6 +32,7 @@ const pengajuan_list = async (req, res) => {
     })
 
     const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
+    console.log(query)
 
     const handle_response = async (err, result) => {
         if (!err) {
@@ -159,7 +160,7 @@ const approve_pengajuan = async (req, res) => {
 
     const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
 
-    const temp = null
+    let temp = null
 
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
@@ -181,6 +182,7 @@ const approve_pengajuan = async (req, res) => {
     const handle_check_data = (err, data) => {
         if (!err) {
             if (data.length > 0) {
+                temp = data[0]
                 connection.getConnection(async (err, conn) => {
                     conn.query(query, payload, handle_edit_pengajuan)
                     conn.release();

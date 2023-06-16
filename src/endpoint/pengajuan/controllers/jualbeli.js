@@ -19,7 +19,7 @@ const pengajuan_list = async (req, res) => {
 
     const token = raw_token.split(' ')[1]
 
-    let condition = `WHERE tipe_pengajuan = 'JUAL BELI' `
+    let condition = `WHERE pengajuan.tipe_pengajuan = 'JUAL BELI' `
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
@@ -82,7 +82,7 @@ const create_pengajuan = async (req, res) => {
     const url_kk = await uploadImage(foto_kk[0].path)
     const url_rab = await uploadImage(dokumen_rab[0].path)
 
-    var payload = [id_pengajuan, produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah, 'KERJA SAMA', url_ktp, url_kk, url_rab]
+    var payload = [id_pengajuan, produk_pembiayaan, durasi_pembiayaan, nominal_pembiayaan, nominal_pelunasan, id_nasabah, 'JUAL BELI', url_ktp, url_kk, url_rab]
 
     let query = 'INSERT INTO pengajuan (id_pengajuan, produk_pengajuan, durasi, nominal_awal, nominal_akhir, id_nasabah, tipe_pengajuan, attach_ktp, attach_kk, attach_lainnya) VALUES (?,?,?,?,?,?,?,?,?,?)'
 
@@ -210,12 +210,13 @@ const approve_pengajuan = async (req, res) => {
 
     const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
 
-    const temp = null
+    let temp = null
 
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
-            const catatan = `Persetujuan PEngajuan Pembiayaab Jual Beli Nasabah (${temp.id_nasabah})`
+            const catatan = `Persetujuan Pengajuan Pembiayaan Jual Beli Nasabah (${temp.id_nasabah})`
             kas_keluar(temp.nominal_awal, catatan)
+
             return res.status(200).json({
                 status: 200,
                 message: 'Success Approve Pengajuan',

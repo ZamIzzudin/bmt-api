@@ -1,5 +1,5 @@
 import express from "express"
-import controller from '../controllers/kerjasama.js'
+import controller from '../controllers/jualbeli.js'
 import multer from "multer"
 import { nasabah, is_login, officer } from '../../../middeware/access_auth.js'
 
