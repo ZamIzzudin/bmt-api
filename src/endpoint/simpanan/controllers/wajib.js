@@ -55,7 +55,7 @@ const simpanan_list = async (req, res) => {
 
 const simpanan_parent_list = async (req, res) => {
 
-    const query = `SELECT simpanan.id_nasabah, user.nama, simpanan.nominal, simpanan.tahun, COUNT(simpanan.tahun) as child_tahunan, COUNT(user.nama) as child_setoran FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib'`
+    const query = `SELECT simpanan.id_nasabah, user.nama, simpanan.nominal, simpanan.tahun FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib' GROUP BY simpanan.tahun, user.nama`
 
     const handle_response = async (err, result) => {
         if (!err) {
