@@ -89,18 +89,25 @@ const action_anggsuran = async (req, res) => {
 
                     kas_masuk(nominal, catatan)
 
-                    await conn.query(query_update, [new_nominal, id_proses], handle_response)
-                    await conn.query(query, payload, handle_response)
+                    await conn.query(query_update, [new_nominal, id_proses], async (error, result) => {
+                        if (!error) {
+                            await conn.query(query, payload, handle_response)
+                        }
+                    })
                 } else {
-                    if (data[0].nominal < nominal) {
+                    if (data[0].nominal >= nominal) {
                         const catatan = 'Angsuran Penarikan Keluar'
                         const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
                         const new_nominal = data[0].nominal - nominal
 
                         kas_keluar(nominal, catatan)
 
-                        await conn.query(query_update, [new_nominal, id_proses], handle_response)
-                        await conn.query(query, payload, handle_response)
+                        await conn.query(query_update, [new_nominal, id_proses], async (error, result) => {
+                            if (!error) {
+                                await conn.query(query, payload, handle_response)
+                            }
+                        })
+
                     } else {
                         return res.status(400).json({
                             status: 400,
