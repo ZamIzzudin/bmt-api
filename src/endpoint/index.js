@@ -4,6 +4,7 @@ import user from "./user/routes/user.js"
 import pengajuan from "./pengajuan/routes/pengajuan.js"
 import kas from "./kas/routes/kas.js"
 import simpanan from './simpanan/routes/simpanan.js'
+import angsuran from './angsuran/routes/angsuran.js'
 
 const endpoint = express.Router()
 
@@ -21,6 +22,7 @@ endpoint.use('/user', user)
 endpoint.use('/kas', kas)
 endpoint.use('/pengajuan', pengajuan)
 endpoint.use('/simpanan', simpanan)
+endpoint.use('/angsuran', angsuran)
 
 endpoint.get('*', (req, res) => { //error response endpoint
     res.send({
