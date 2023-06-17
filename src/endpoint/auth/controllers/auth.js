@@ -1,7 +1,7 @@
 import { uid } from 'uid';
 import { encrpyt_one_way, pairing_one_way } from '../../../utils/crypt.js'
 import { create_access_token, create_refresh_token, verify_refresh_token } from '../../../utils/jwt.js'
-import { generateSimpananPokok, generateSatuSimpananWajib } from '../../simpanan/controllers/function.js'
+import { generateSimpananPokok, generateSatuSimpananWajib, generateSimpananSukarela } from '../../simpanan/controllers/function.js'
 import connection from '../../../config/index.js'
 
 const register = async (req, res) => {
@@ -20,6 +20,7 @@ const register = async (req, res) => {
                 if (role.toLowerCase() === 'nasabah') {
                     generateSimpananPokok(id_user)
                     generateSatuSimpananWajib(id_user)
+                    generateSimpananSukarela(id_user, 0, 'Wadiah')
                 }
 
                 const access_token = create_access_token(id_user, role.toUpperCase(), nama);

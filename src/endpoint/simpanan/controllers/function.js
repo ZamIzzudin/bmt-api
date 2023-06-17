@@ -72,7 +72,7 @@ async function generateSatuSimpananWajib(id_nasabah) {
     const tahun = date.getFullYear()
 
     const id_simpanan = uid(16)
-    const payload = [id_simpanan, id_nasabah, 30000, 'Wajib', 'Wadiah', tahun, bulan, 'BELUM LUNAS']
+    const payload = [id_simpanan, id_nasabah, 30000, 'Wajib', 'Wajib', tahun, bulan, 'BELUM LUNAS']
     const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan,tahun,bulan,status) VALUES (?,?,?,?,?,?,?,?)'
 
     connection.getConnection(async (err, conn) => {
