@@ -13,7 +13,7 @@ pengajuan.use('/pokok', pokok)
 pengajuan.use('/sukarela', sukarela)
 
 // Scheduler
-cron.schedule('* * * * *', () => {
+cron.schedule('0 0 1 * *', () => {
     generateSimpananWajib()
 });
 
