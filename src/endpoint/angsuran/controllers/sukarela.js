@@ -39,15 +39,15 @@ const angsuran_list = async (req, res) => {
     })
 }
 
-const action_anggsuran = async (req, res) => {
+const angsuran_setor = async (req, res) => {
     const { id_proses } = req.params
-    const { tipe_angsuran, nominal } = req.body
+    const { nominal } = req.body
     const { authorization: raw_token } = req.headers
 
     const id_angsuran = uid(16)
     const token = raw_token.split(' ')[1]
 
-    var payload = [id_angsuran, id_proses, tipe_angsuran, nominal]
+    var payload = [id_angsuran, id_proses, 'Setor', nominal]
 
     const query = `INSERT INTO angsuran (id_angsuran, id_proses, tipe_angsuran, nominal, teller) VALUES (?,?,?,?,?)`
     const query_find = `SELECT nominal FROM simpanan WHERE id_simpanan = ?`
@@ -82,38 +82,89 @@ const action_anggsuran = async (req, res) => {
     connection.getConnection(async (err, conn) => {
         await conn.query(query_find, [id_proses], async (error, data) => {
             if (!error) {
-                if (tipe_angsuran === 'Setor') {
-                    const catatan = 'Angsuran Setoran Masuk'
-                    const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
-                    const new_nominal = data[0].nominal + nominal
+                const catatan = 'Angsuran Setoran Masuk'
+                const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
+                const new_nominal = data[0].nominal + nominal
 
-                    kas_masuk(nominal, catatan)
+                kas_masuk(nominal, catatan)
+
+                await conn.query(query_update, [new_nominal, id_proses], async (error, result) => {
+                    if (!error) {
+                        await conn.query(query, payload, handle_response)
+                    }
+                })
+            } else {
+                return res.status(404).json({
+                    status: 404,
+                    message: 'Rekening Tidak Ditemukan',
+                })
+            }
+        })
+        conn.release();
+    })
+}
+
+const angsuran_tarik = async (req, res) => {
+    const { id_proses } = req.params
+    const { nominal } = req.body
+    const { authorization: raw_token } = req.headers
+
+    const id_angsuran = uid(16)
+    const token = raw_token.split(' ')[1]
+
+    var payload = [id_angsuran, id_proses, 'Tarik', nominal]
+
+    const query = `INSERT INTO angsuran (id_angsuran, id_proses, tipe_angsuran, nominal, teller) VALUES (?,?,?,?,?)`
+    const query_find = `SELECT nominal FROM simpanan WHERE id_simpanan = ?`
+
+    verify_access_token(token, async (error, result) => {
+        if (!error) {
+            payload.push(result.name)
+        } else {
+            return res.status(405).json({
+                status: 403,
+                message: 'unathorized',
+                info: 'token not found'
+            })
+        }
+    })
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            res.json({
+                status: 200,
+                message: `Success Generate Angsuran`,
+            })
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query_find, [id_proses], async (error, data) => {
+            if (!error) {
+                if (data[0].nominal >= nominal) {
+                    const catatan = 'Angsuran Penarikan Keluar'
+                    const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
+                    const new_nominal = data[0].nominal - nominal
+
+                    kas_keluar(nominal, catatan)
 
                     await conn.query(query_update, [new_nominal, id_proses], async (error, result) => {
                         if (!error) {
                             await conn.query(query, payload, handle_response)
                         }
                     })
+
                 } else {
-                    if (data[0].nominal >= nominal) {
-                        const catatan = 'Angsuran Penarikan Keluar'
-                        const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
-                        const new_nominal = data[0].nominal - nominal
-
-                        kas_keluar(nominal, catatan)
-
-                        await conn.query(query_update, [new_nominal, id_proses], async (error, result) => {
-                            if (!error) {
-                                await conn.query(query, payload, handle_response)
-                            }
-                        })
-
-                    } else {
-                        return res.status(400).json({
-                            status: 400,
-                            message: 'Nominal Tidak Mencukupi Untuk Melakukan Penarikan',
-                        })
-                    }
+                    return res.status(400).json({
+                        status: 400,
+                        message: 'Nominal Tidak Mencukupi Untuk Melakukan Penarikan',
+                    })
                 }
             } else {
                 return res.status(404).json({
@@ -128,7 +179,8 @@ const action_anggsuran = async (req, res) => {
 
 const controller = {
     angsuran_list,
-    action_anggsuran
+    angsuran_setor,
+    angsuran_tarik
 }
 
 export default controller
