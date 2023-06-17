@@ -93,11 +93,11 @@ const belum_lunas_list = async (req, res) => {
     let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' AND simpanan.status = 'BELUM LUNAS' `
 
     if (bulan != null) {
-        condition = condition + `simpanan.bulan = ${bulan} `
+        condition = condition + `AND simpanan.bulan = ${bulan} `
     }
 
     if (tahun != null) {
-        condition = condition + `simpanan.tahun = ${tahun} `
+        condition = condition + `AND simpanan.tahun = ${tahun} `
     }
 
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
