@@ -16,8 +16,24 @@ async function generateSimpananPokok(id_nasabah) {
     })
 }
 
-async function generateSimpananWajib() {
-    console.log('Generte Simpanan Wajib')
+async function generateSimpananSukarela(id_nasabah, nominal, produk) {
+    const id_simpanan = uid(16)
+    const payload = [id_simpanan, id_nasabah, nominal, 'Sukarela', produk]
+    const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan) VALUES (?,?,?,?,?)'
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, payload, (error, result) => {
+            if (error) {
+                console.log(error)
+            }
+        })
+        conn.release();
+    })
 }
 
-export { generateSimpananPokok, generateSimpananWajib }
+async function generateSimpananWajib() {
+    const date = new Date()
+    console.log('Generte Simpanan Wajib ' + date.toDateString())
+}
+
+export { generateSimpananPokok, generateSimpananSukarela, generateSimpananWajib }
