@@ -32,8 +32,11 @@ async function generateSimpananSukarela(id_nasabah, nominal, produk) {
 }
 
 async function generateSimpananWajib() {
+    const month_list = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
     const date = new Date()
-    console.log('Generte Simpanan Wajib ' + date.toDateString())
+    const bulan = month_list[date.getMonth()];
+
+
 }
 
 export { generateSimpananPokok, generateSimpananSukarela, generateSimpananWajib }

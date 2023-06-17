@@ -1,4 +1,3 @@
-import { uid } from 'uid';
 import connection from '../../../config/index.js'
 
 const simpanan_list = async (req, res) => {

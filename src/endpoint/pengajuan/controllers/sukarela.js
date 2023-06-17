@@ -33,7 +33,6 @@ const pengajuan_list = async (req, res) => {
     })
 
     const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
-    console.log(query)
 
     const handle_response = async (err, result) => {
         if (!err) {
