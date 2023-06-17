@@ -50,6 +50,7 @@ const action_anggsuran = async (req, res) => {
     var payload = [id_angsuran, id_proses, tipe_angsuran, nominal]
 
     const query = `INSERT INTO angsuran (id_angsuran, id_proses, tipe_angsuran, nominal, teller) VALUES (?,?,?,?,?)`
+    const query_find = `SELECT nominal FROM simpanan WHERE id_simpanan = ?`
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
@@ -65,14 +66,6 @@ const action_anggsuran = async (req, res) => {
 
     const handle_response = async (err, result) => {
         if (!err) {
-            if (tipe_angsuran === 'Setor') {
-                const catatan = 'Angsuran Setoran Masuk'
-                kas_masuk(nominal, catatan)
-            } else {
-                const catatan = 'Angsuran Penarikan Keluar'
-                kas_keluar(nominal, catatan)
-            }
-
             res.json({
                 status: 200,
                 message: `Success Generate Angsuran`,
@@ -87,7 +80,41 @@ const action_anggsuran = async (req, res) => {
     }
 
     connection.getConnection(async (err, conn) => {
-        await conn.query(query, payload, handle_response)
+        await conn.query(query_find, [id_proses], async (error, data) => {
+            if (!error) {
+                if (tipe_angsuran === 'Setor') {
+                    const catatan = 'Angsuran Setoran Masuk'
+                    const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
+                    const new_nominal = data[0].nominal + nominal
+
+                    kas_masuk(nominal, catatan)
+
+                    await conn.query(query_update, [new_nominal, id_proses], handle_response)
+                    await conn.query(query, payload, handle_response)
+                } else {
+                    if (data[0].nominal < nominal) {
+                        const catatan = 'Angsuran Penarikan Keluar'
+                        const query_update = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = ?`
+                        const new_nominal = data[0].nominal - nominal
+
+                        kas_keluar(nominal, catatan)
+
+                        await conn.query(query_update, [new_nominal, id_proses], handle_response)
+                        await conn.query(query, payload, handle_response)
+                    } else {
+                        return res.status(400).json({
+                            status: 400,
+                            message: 'Nominal Tidak Mencukupi Untuk Melakukan Penarikan',
+                        })
+                    }
+                }
+            } else {
+                return res.status(404).json({
+                    status: 404,
+                    message: 'Rekening Tidak Ditemukan',
+                })
+            }
+        })
         conn.release();
     })
 }
