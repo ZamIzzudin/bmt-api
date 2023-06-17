@@ -75,12 +75,14 @@ async function generateSatuSimpananWajib(id_nasabah) {
     const payload = [id_simpanan, id_nasabah, 30000, 'Wajib', 'Wajib', tahun, bulan, 'BELUM LUNAS']
     const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan,tahun,bulan,status) VALUES (?,?,?,?,?,?,?,?)'
 
-    await conn.query(query, payload, (error, result) => {
-        if (!error) {
-            console.log('Berhasil Generate Data')
-        } else {
-            console.log(error)
-        }
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, payload, (error, result) => {
+            if (!error) {
+                console.log('Berhasil Generate Data')
+            } else {
+                console.log(error)
+            }
+        })
     })
 }
 
