@@ -1,4 +1,6 @@
 import connection from '../../../config/index.js'
+import { verify_access_token } from '../../../utils/jwt.js'
+
 
 const simpanan_list = async (req, res) => {
     const { status = null, bulan = null, tahun = null } = req.query
@@ -129,10 +131,60 @@ const belum_lunas_list = async (req, res) => {
     })
 }
 
+const setor_simpanan = async (req, res) => {
+    const { id_simpanan } = req.params
+
+    let query = ''
+
+    verify_access_token(token, async (error, result) => {
+        if (!error) {
+            query = `UPDATE simpanan SET status = 'LUNAS', id_teller = ${result.name} WHERE id_simpanan = ${id_simpanan}`
+        } else {
+            return res.status(405).json({
+                status: 403,
+                message: 'unathorized',
+                info: 'token not found'
+            })
+        }
+    })
+
+
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            if (result.length > 0) {
+                res.json({
+                    status: 200,
+                    message: `Success Setor Simpanan Wajib List`,
+                    data: result
+                })
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: 'failed',
+                    info: "Simpanan Wajib Not Found"
+                })
+            }
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, [], handle_response)
+        conn.release();
+    })
+}
+
 const controller = {
     simpanan_list,
     simpanan_parent_list,
-    belum_lunas_list
+    belum_lunas_list,
+    setor_simpanan
 }
 
 export default controller

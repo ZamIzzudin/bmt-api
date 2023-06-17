@@ -22,8 +22,8 @@ const register = async (req, res) => {
                     generateSatuSimpananWajib(id_user)
                 }
 
-                const access_token = create_access_token(id_user, role.toUpperCase());
-                const refresh_token = create_refresh_token(id_user, role.toUpperCase())
+                const access_token = create_access_token(id_user, role.toUpperCase(), nama);
+                const refresh_token = create_refresh_token(id_user, role.toUpperCase(), nama)
 
                 res.cookie("refreshToken", refresh_token, {
                     expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -91,8 +91,8 @@ const login = async (req, res) => {
                 const hashPassword = await pairing_one_way(password.toString(), result[0].password)
 
                 if (hashPassword) {
-                    const access_token = create_access_token(result[0].id_user, result[0].role.toUpperCase());
-                    const refresh_token = create_refresh_token(result[0].id_user, result[0].role.toUpperCase())
+                    const access_token = create_access_token(result[0].id_user, result[0].role.toUpperCase(), result[0].nama);
+                    const refresh_token = create_refresh_token(result[0].id_user, result[0].role.toUpperCase(), result[0].nama)
 
                     res.cookie("refreshToken", refresh_token, {
                         expires: new Date(Date.now() + 1000 * 60 * 60 * 24), //one day
@@ -172,8 +172,8 @@ const refresh_token = async (req, res) => {
                 })
             }
 
-            const access_token = create_access_token(decoded.id, decoded.role)
-            const refresh_token = create_refresh_token(decoded.id, decoded.role)
+            const access_token = create_access_token(decoded.id, decoded.role, decoded.name)
+            const refresh_token = create_refresh_token(decoded.id, decoded.role, decoded.name)
 
 
             //send cookie with contain refresh token

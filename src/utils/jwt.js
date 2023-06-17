@@ -10,12 +10,12 @@ const {
 
 //generate access JWT token by id 
 const create_access_token = (id, role) => {
-    return jwt.sign({ id, role }, ACCESS_TOKEN, { expiresIn: MAX_AGE_ACCESS_TOKEN });
+    return jwt.sign({ id, role, name }, ACCESS_TOKEN, { expiresIn: MAX_AGE_ACCESS_TOKEN });
 }
 
 //generate refresh JWT token by id
 const create_refresh_token = (id, role) => {
-    return jwt.sign({ id, role }, REFRESH_TOKEN, { expiresIn: MAX_AGE_REFRESH_TOKEN });
+    return jwt.sign({ id, role, name }, REFRESH_TOKEN, { expiresIn: MAX_AGE_REFRESH_TOKEN });
 }
 
 //verify access JWT token

@@ -7,5 +7,6 @@ const wajib = express.Router()
 wajib.get('/', internals, controller.simpanan_parent_list)
 wajib.get('/:id_nasabah', is_login, controller.simpanan_list)
 wajib.get('/belum-lunas', is_login, controller.belum_lunas_list)
+wajib.put('/setor/:id_simpanan', is_login, controller.setor_simpanan)
 
 export default wajib
