@@ -1,6 +1,7 @@
 import { uid } from 'uid';
 import { encrpyt_one_way, pairing_one_way } from '../../../utils/crypt.js'
 import { create_access_token, create_refresh_token, verify_refresh_token } from '../../../utils/jwt.js'
+import { generateSimpananPokok } from '../../simpanan/controllers/function.js'
 import connection from '../../../config/index.js'
 
 const register = async (req, res) => {
@@ -16,6 +17,10 @@ const register = async (req, res) => {
         const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
             if (!error) {
+                if (role.toLowerCase() === 'nasabah') {
+                    generateSimpananPokok(id_user)
+                }
+
                 const access_token = create_access_token(id_user, role.toUpperCase());
                 const refresh_token = create_refresh_token(id_user, role.toUpperCase())
 

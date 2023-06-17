@@ -3,8 +3,7 @@ import auth_user from "./auth/routes/auth.js"
 import user from "./user/routes/user.js"
 import pengajuan from "./pengajuan/routes/pengajuan.js"
 import kas from "./kas/routes/kas.js"
-
-
+import simpanan from './simpanan/routes/simpanan.js'
 
 const endpoint = express.Router()
 
@@ -21,6 +20,7 @@ endpoint.use('/auth', auth_user)
 endpoint.use('/user', user)
 endpoint.use('/kas', kas)
 endpoint.use('/pengajuan', pengajuan)
+endpoint.use('/simpanan', simpanan)
 
 endpoint.get('*', (req, res) => { //error response endpoint
     res.send({

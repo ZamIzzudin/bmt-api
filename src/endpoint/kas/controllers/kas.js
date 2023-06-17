@@ -4,10 +4,10 @@ import { uid } from 'uid';
 const kas_list = async (req, res) => {
     const { type } = req.query
 
-    let query = `SELECT * FROM kas `
+    let query = `SELECT * FROM kas`
 
     if (type != null) {
-        query = query + `WHERE jenis_transaksi = '${type.toUpperCase()}'`
+        query = query + ` WHERE jenis_transaksi = '${type.toUpperCase()}'`
     }
 
     const handle_response = async (err, result) => {
