@@ -1,10 +1,12 @@
 import { uid } from 'uid';
 import connection from '../../../config/index.js'
+import { kas_masuk } from '../../kas/controllers/function.js'
 
 async function generateSimpananPokok(id_nasabah) {
     const id_simpanan = uid(16)
     const payload = [id_simpanan, id_nasabah, 50000, 'Pokok', 'Pokok']
     const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan) VALUES (?,?,?,?,?)'
+    kas_masuk(50000)
 
     connection.getConnection(async (err, conn) => {
         await conn.query(query, payload, (error, result) => {

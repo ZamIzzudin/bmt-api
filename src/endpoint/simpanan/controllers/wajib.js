@@ -1,13 +1,10 @@
 import connection from '../../../config/index.js'
-import { verify_access_token } from '../../../utils/jwt.js'
 
 const simpanan_list = async (req, res) => {
-    const { type, status = null, bulan = null, tahun = null } = req.query
-    const { authorization: raw_token } = req.headers
+    const { status = null, bulan = null, tahun = null } = req.query
+    const { id_nasabah } = req.params
 
-    const token = raw_token.split(' ')[1]
-
-    let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' `
+    let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' AND simpanan.id_nasabah = '${id_nasabah}' `
 
     if (status == 'belum-lunas') {
         condition = condition + `simpanan.status = 'BELUM LUNAS' `
@@ -21,26 +18,84 @@ const simpanan_list = async (req, res) => {
         condition = condition + `simpanan.tahun = ${tahun} `
     }
 
-    verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'nasabah' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
+    const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            if (result.length > 0) {
+                res.json({
+                    status: 200,
+                    message: `Success Get Simpanan Wajib List`,
+                    data: result
                 })
-            } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
-                condition = condition + `AND simpanan.id_nasabah = '${result.id}'`
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: 'failed',
+                    info: "Simpanan Wajib Not Found"
+                })
             }
         } else {
-            return res.status(405).json({
-                status: 403,
-                message: 'unathorized',
-                info: 'token not found'
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
             })
         }
-    })
+    }
 
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, [], handle_response)
+        conn.release();
+    })
+}
+
+const simpanan_parent_list = async (req, res) => {
+
+    const query = `SELECT simpanan.id_nasabah, user.nama, simpanan.nominal, simpanan.tahun, COUNT(simpanan.tahun) as child_tahunan, COUNT(user.nama) as child_setoran FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib'`
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            if (result.length > 0) {
+                res.json({
+                    status: 200,
+                    message: `Success Get Simpanan Wajib List`,
+                    data: result
+                })
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: 'failed',
+                    info: "Simpanan Wajib Not Found"
+                })
+            }
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, [], handle_response)
+        conn.release();
+    })
+}
+
+const belum_lunas_list = async (req, res) => {
+    const { bulan = null, tahun = null } = req.query
+
+    let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' simpanan.status = 'BELUM LUNAS' `
+
+    if (bulan != null) {
+        condition = condition + `simpanan.bulan = ${bulan} `
+    }
+
+    if (tahun != null) {
+        condition = condition + `simpanan.tahun = ${tahun} `
+    }
 
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
 
@@ -49,14 +104,14 @@ const simpanan_list = async (req, res) => {
             if (result.length > 0) {
                 res.json({
                     status: 200,
-                    message: `Success Get Simpanan Sukarela List`,
+                    message: `Success Get Simpanan Wajib List`,
                     data: result
                 })
             } else {
                 res.status(400).json({
                     status: 400,
                     message: 'failed',
-                    info: "Simpanan Sukarela Not Found"
+                    info: "Simpanan Wajib Not Found"
                 })
             }
         } else {
@@ -75,7 +130,9 @@ const simpanan_list = async (req, res) => {
 }
 
 const controller = {
-    simpanan_list
+    simpanan_list,
+    simpanan_parent_list,
+    belum_lunas_list
 }
 
 export default controller
