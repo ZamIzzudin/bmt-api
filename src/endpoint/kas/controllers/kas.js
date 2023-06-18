@@ -74,35 +74,30 @@ const create_kas = async (req, res) => {
 }
 
 const rekap_kas = async (req, res) => {
-    let query = `SELECT SUM(nominal_masuk), SUM(nominal_keluar) FROM kas`
+    const queries = [
+        `SELECT SUM(nominal_masuk) AS kas_masuk, SUM(nominal_keluar) AS kas_keluar FROM kas`,
+        `SELECT COUNT(email) AS jumlah_nasabah FROM user WHERE role = 'NASABAH'`
+    ]
 
-    const handle_response = async (err, result) => {
-        if (!err) {
-            if (result.length > 0) {
-                res.json({
-                    status: 200,
-                    message: `Success Get Data Kas`,
-                    data: result
-                })
-            } else {
-                res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: "Transaksi Kas Not Found"
-                })
-            }
-        } else {
-            res.status(404).json({
-                status: 404,
-                message: 'failed',
-                info: err
-            })
-        }
-    }
+    let rekap = {}
 
     connection.getConnection(async (err, conn) => {
-        await conn.query(query, [], handle_response)
-        conn.release();
+        await Promise.all(queries.map(async (query) => {
+            await conn.query(query, [], (err, result) => {
+                Object.keys(result[0]).forEach(key => {
+                    rekap[key] = result[0][key]
+                })
+                console.log(rekap)
+            })
+        }).then(() => {
+            conn.release();
+
+            return res.status(200).json({
+                status: 200,
+                message: 'Success Get Rekap',
+                data: rekap
+            })
+        }))
     })
 }
 

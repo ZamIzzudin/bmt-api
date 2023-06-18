@@ -6,7 +6,7 @@ const kas = express.Router()
 
 kas.get('/', internals, controller.kas_list)
 kas.post('/', internals, controller.create_kas)
-kas.post('/rekap', internals, controller.rekap_kas)
+kas.get('/rekap', internals, controller.rekap_kas)
 
 
 export default kas

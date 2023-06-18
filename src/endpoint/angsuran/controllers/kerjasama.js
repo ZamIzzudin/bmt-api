@@ -50,7 +50,7 @@ const angsuran_setor = async (req, res) => {
     var payload = [id_angsuran, id_proses, 'Setor', nominal]
 
     const query = `INSERT INTO angsuran (id_angsuran, id_proses, tipe_angsuran, nominal, teller) VALUES (?,?,?,?,?)`
-    const query_find = `SELECT nominal FROM pembiayaan WHERE id_pembiayaan = ?`
+    const query_find = `SELECT sisa_angsuran FROM pembiayaan WHERE id_pembiayaan = ?`
 
     verify_access_token(token, async (error, result) => {
         if (!error) {
@@ -78,6 +78,7 @@ const angsuran_setor = async (req, res) => {
             })
         }
     }
+
 
     connection.getConnection(async (err, conn) => {
         await conn.query(query_find, [id_proses], async (error, data) => {
