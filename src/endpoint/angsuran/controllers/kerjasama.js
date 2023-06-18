@@ -84,8 +84,12 @@ const angsuran_setor = async (req, res) => {
         await conn.query(query_find, [id_proses], async (error, data) => {
             if (!error) {
                 const catatan = 'Angsuran Setoran Pembiayaan Kerja Sama Masuk'
-                const query_update = `UPDATE pembiayaan SET sisa_angsuran = ? WHERE id_pembiayaan = ?`
+                let query_update = `UPDATE pembiayaan SET sisa_angsuran = ? WHERE id_pembiayaan = ?`
                 const new_nominal = data[0].sisa_angsuran - nominal
+
+                if (new_nominal === 0) {
+                    query_update = `UPDATE pembiayaan SET sisa_angsuran = ?, status = 'LUNAS' WHERE id_pembiayaan = ?`
+                }
 
                 kas_masuk(nominal, catatan)
 
