@@ -1,12 +1,13 @@
 import express from "express"
 import controller from '../controllers/kas.js'
-import { internals } from '../../../middeware/access_auth.js'
+import { internals, nasabah } from '../../../middeware/access_auth.js'
 
 const kas = express.Router()
 
 kas.get('/', internals, controller.kas_list)
-kas.post('/', internals, controller.create_kas)
 kas.get('/rekap', internals, controller.rekap_kas)
+kas.get('/profile/:id_nasabah', nasabah, controller.rekap_kas)
 
+kas.post('/', internals, controller.create_kas)
 
 export default kas
