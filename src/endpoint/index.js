@@ -5,6 +5,7 @@ import pengajuan from "./pengajuan/routes/pengajuan.js"
 import kas from "./kas/routes/kas.js"
 import simpanan from './simpanan/routes/simpanan.js'
 import angsuran from './angsuran/routes/angsuran.js'
+import pembiayaan from './pembiayaan/routes/pembiayaan.js'
 
 const endpoint = express.Router()
 
@@ -23,6 +24,7 @@ endpoint.use('/kas', kas)
 endpoint.use('/pengajuan', pengajuan)
 endpoint.use('/simpanan', simpanan)
 endpoint.use('/angsuran', angsuran)
+endpoint.use('/pembiayaan', pembiayaan)
 
 endpoint.get('*', (req, res) => { //error response endpoint
     res.send({
