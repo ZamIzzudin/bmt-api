@@ -5,8 +5,8 @@ import sukarela from './sukarela.js'
 
 const angsuran = express.Router()
 
-pengajuan.use('/jualbeli', jualbeli)
-pengajuan.use('/kerjasama', kerjasama)
+angsuran.use('/jualbeli', jualbeli)
+angsuran.use('/kerjasama', kerjasama)
 angsuran.use('/sukarela', sukarela)
 
 

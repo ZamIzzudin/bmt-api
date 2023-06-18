@@ -73,9 +73,43 @@ const create_kas = async (req, res) => {
     })
 }
 
+const rekap_kas = async (req, res) => {
+    let query = `SELECT SUM(nominal_masuk), SUM(nominal_keluar) FROM kas`
+
+    const handle_response = async (err, result) => {
+        if (!err) {
+            if (result.length > 0) {
+                res.json({
+                    status: 200,
+                    message: `Success Get Data Kas`,
+                    data: result
+                })
+            } else {
+                res.status(400).json({
+                    status: 400,
+                    message: 'failed',
+                    info: "Transaksi Kas Not Found"
+                })
+            }
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query, [], handle_response)
+        conn.release();
+    })
+}
+
 const controller = {
     kas_list,
-    create_kas
+    create_kas,
+    rekap_kas
 }
 
 export default controller
