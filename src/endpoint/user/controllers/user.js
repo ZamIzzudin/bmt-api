@@ -105,7 +105,7 @@ const update_user = async (req, res) => {
         if (!err) {
             if (data.length > 0) {
                 connection.getConnection(async (err, conn) => {
-                    conn.query(query, payload, handle_delete_user)
+                    conn.query(query, payload, handle_update_user)
                     conn.release();
                 })
             } else {
@@ -127,7 +127,7 @@ const update_user = async (req, res) => {
 
 
     connection.getConnection(async (err, conn) => {
-        await conn.query(query_find, [id_user], handle_update_user)
+        await conn.query(query_find, [id_user], handle_check_data)
         conn.release();
     })
 }
