@@ -86,18 +86,6 @@ const update_user = async (req, res) => {
 
     const query_find = 'SELECT * FROM user WHERE id_user = ?'
 
-    verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'admin' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
-                })
-            }
-        }
-    })
-
     const handle_update_user = (err, result) => {
         if (!err) {
             return res.status(200).json({
