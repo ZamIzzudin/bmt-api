@@ -264,6 +264,70 @@ const approve_pengajuan = async (req, res) => {
     })
 }
 
+const reject_pengajuan = async (req, res) => {
+    const { id_pengajuan } = req.params
+
+    var date = new Date().getTime()
+
+    var payload = [date, 'DITOLAK', id_pengajuan]
+
+    let query = 'UPDATE pengajuan SET approved_at = ?, status_pengajuan = ? WHERE id_pengajuan = ?'
+
+    const query_find = "SELECT * FROM pengajuan WHERE id_pengajuan = ? AND status_pengajuan = 'BELUM DISETUJUI'"
+
+    let temp = null
+
+    const handle_edit_pengajuan = (err, result) => {
+        if (!err) {
+            const catatan = `Persetujuan Pengajuan Pembiayaan Jual Beli Nasabah (${temp.id_nasabah})`
+            generatePembiayaan(temp.id_nasabah, temp.produk_pengajuan, temp.tipe_pengajuan, temp.durasi, temp.nominal_awal, temp.nominal_akhir)
+            kas_keluar(temp.nominal_awal, catatan)
+
+            return res.status(200).json({
+                status: 200,
+                message: 'Success Approve Pengajuan',
+            })
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'failed',
+                info: err
+            })
+        }
+    }
+
+    const handle_check_data = (err, data) => {
+        if (!err) {
+            if (data.length > 0) {
+                temp = data[0]
+                connection.getConnection(async (err, conn) => {
+                    conn.query(query, payload, handle_edit_pengajuan)
+                    conn.release();
+                })
+            } else {
+                return res.status(400).json({
+                    status: 400,
+                    message: 'Data Not Found',
+                    info: 'Cannot find data with this ID'
+                })
+            }
+
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'error',
+                info: 'internal server error'
+            })
+        }
+    }
+
+
+    connection.getConnection(async (err, conn) => {
+        await conn.query(query_find, [id_pengajuan], handle_check_data)
+        conn.release();
+    })
+}
+
 const delete_pengajuan = async (req, res) => {
     const { id_pengajuan } = req.params
 
@@ -331,6 +395,7 @@ const controller = {
     create_pengajuan,
     update_pengajuan,
     approve_pengajuan,
+    reject_pengajuan,
     delete_pengajuan
 }
 

@@ -6,7 +6,7 @@ async function generateSimpananPokok(id_nasabah) {
     const id_simpanan = uid(16)
     const payload = [id_simpanan, id_nasabah, 50000, 'Pokok', 'Pokok']
     const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan) VALUES (?,?,?,?,?)'
-    kas_masuk(50000)
+    kas_masuk(50000, 'Setor Masuk dari Simpanan Pokok')
 
     connection.getConnection(async (err, conn) => {
         await conn.query(query, payload, (error, result) => {
@@ -22,6 +22,9 @@ async function generateSimpananSukarela(id_nasabah, nominal, produk) {
     const id_simpanan = uid(16)
     const payload = [id_simpanan, id_nasabah, nominal, 'Sukarela', produk]
     const query = 'INSERT INTO simpanan (id_simpanan, id_nasabah, nominal, tipe_simpanan, produk_simpanan) VALUES (?,?,?,?,?)'
+    const catatan = `Persetujuan Pengajuan Simpanan Sukarela Nasabah (${id_nasabah})`
+    kas_masuk(nominal, catatan)
+
 
     connection.getConnection(async (err, conn) => {
         await conn.query(query, payload, (error, result) => {

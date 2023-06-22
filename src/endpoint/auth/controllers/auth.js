@@ -6,13 +6,14 @@ import connection from '../../../config/index.js'
 
 const register = async (req, res) => {
     const id_user = uid(16)
-    const { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role } = req.body
+    const no_rek = uid(10)
+    const { username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, status_perkawinan, email, role } = req.body
 
     const query_find = 'SELECT * FROM user WHERE email = ?'
 
     const do_register = async () => {
         const encrypted_password = await encrpyt_one_way(password)
-        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role.toUpperCase()]
+        const payload = [id_user, username, encrypted_password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rek, status_perkawinan, email, role.toUpperCase()]
 
         const query_regist = 'INSERT INTO user (id_user,username, password, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email,role) VALUE (?,?,?,?,?,?,?,?,?,?,?,?,?)'
         const handle_register = (error, result) => {
