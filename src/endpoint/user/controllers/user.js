@@ -13,24 +13,6 @@ const user_list = async (req, res) => {
         condition = "role = 'admin' OR role = 'admin_master' OR role = 'officer' OR role = 'manager'"
     }
 
-    verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'admin' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
-                })
-            }
-        } else {
-            return res.status(405).json({
-                status: 403,
-                message: 'unathorized',
-                info: 'token not found'
-            })
-        }
-    })
-
     const query = 'SELECT id_user, created_at,username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role FROM user WHERE ' + condition
 
     const handle_response = async (err, result) => {
@@ -104,18 +86,6 @@ const update_user = async (req, res) => {
 
     const query_find = 'SELECT * FROM user WHERE id_user = ?'
 
-    verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'admin' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
-                })
-            }
-        }
-    })
-
     const handle_update_user = (err, result) => {
         if (!err) {
             return res.status(200).json({
@@ -135,7 +105,7 @@ const update_user = async (req, res) => {
         if (!err) {
             if (data.length > 0) {
                 connection.getConnection(async (err, conn) => {
-                    conn.query(query, payload, handle_delete_user)
+                    conn.query(query, payload, handle_update_user)
                     conn.release();
                 })
             } else {
@@ -157,7 +127,7 @@ const update_user = async (req, res) => {
 
 
     connection.getConnection(async (err, conn) => {
-        await conn.query(query_find, [id_user], handle_update_user)
+        await conn.query(query_find, [id_user], handle_check_data)
         conn.release();
     })
 }
