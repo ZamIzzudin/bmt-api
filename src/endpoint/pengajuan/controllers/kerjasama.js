@@ -278,12 +278,9 @@ const reject_pengajuan = async (req, res) => {
 
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
-            const catatan = `Persetujuan Pengajuan Pembiayaan Kerja Sama Nasabah (${temp.id_nasabah})`
-            generatePembiayaan(temp.id_nasabah, temp.produk_pengajuan, temp.tipe_pengajuan, temp.durasi, temp.nominal_awal, temp.nominal_akhir)
-            kas_keluar(temp.nominal_awal, catatan)
             return res.status(200).json({
                 status: 200,
-                message: 'Success Approve Pengajuan',
+                message: 'Success Reject Pengajuan',
             })
         } else {
             return res.status(404).json({

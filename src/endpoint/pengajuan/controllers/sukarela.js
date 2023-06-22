@@ -226,11 +226,9 @@ const reject_pengajuan = async (req, res) => {
 
     const handle_edit_pengajuan = (err, result) => {
         if (!err) {
-            generateSimpananSukarela(temp.id_nasabah, temp.nominal_awal, temp.produk_pengajuan)
-
             return res.status(200).json({
                 status: 200,
-                message: 'Success Approve Pengajuan',
+                message: 'Success Reject Pengajuan',
             })
         } else {
             return res.status(404).json({
