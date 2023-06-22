@@ -31,7 +31,7 @@ const pengajuan_list = async (req, res) => {
                     info: 'you dont have valid access'
                 })
             } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
-                condition = condition + `AND id_nasabah = '${result.id}'`
+                condition = condition + `AND pengajuan.id_nasabah = '${result.id}'`
             }
         } else {
             return res.status(405).json({

@@ -31,7 +31,7 @@ const pengajuan_list = async (req, res) => {
                     info: 'you dont have valid access'
                 })
             } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
-                condition = condition + `AND id_nasabah = '${result.id}'`
+                condition = condition + `AND pengajuan.id_nasabah = '${result.id}'`
             }
         } else {
             return res.status(405).json({
@@ -43,6 +43,7 @@ const pengajuan_list = async (req, res) => {
     })
 
     const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
+    console.log(query)
 
     const handle_response = async (err, result) => {
         if (!err) {

@@ -1,6 +1,5 @@
 import { verify_access_token } from '../../../utils/jwt.js'
 import connection from '../../../config/index.js'
-import { kas_masuk } from '../../kas/controllers/function.js'
 import { generateSimpananSukarela } from '../../simpanan/controllers/function.js'
 import { uid } from 'uid';
 
@@ -21,7 +20,7 @@ const pengajuan_list = async (req, res) => {
                     info: 'you dont have valid access'
                 })
             } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
-                condition = condition + `AND id_nasabah = '${result.id}'`
+                condition = condition + `AND pengajuan.id_nasabah = '${result.id}'`
             }
         } else {
             return res.status(405).json({
