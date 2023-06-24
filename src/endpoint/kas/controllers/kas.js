@@ -14,7 +14,7 @@ const kas_list = async (req, res) => {
     //Fix search query
     if (!type) {
         if(search){
-            query = query + `WHERE id_transaksi LIKE '%${search}%'`
+            query = query + ` WHERE id_transaksi LIKE '%${search}%'`
         }
     } else if(type){
         if(search){
