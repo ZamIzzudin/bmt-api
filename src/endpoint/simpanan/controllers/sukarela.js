@@ -31,7 +31,7 @@ const simpanan_list = async (req, res) => {
 
     //Fix search query
     if (search) {
-        condition += `AND (simpanan.id_anggota LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
+    condition += `AND (simpanan.id_nasabah LIKE '%${search}%' OR user.nama LIKE '%${search}%' OR simpanan.produk_simpanan LIKE '%${search}%') `;
     }
     
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`

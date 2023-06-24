@@ -10,22 +10,13 @@ const simpanan_list = async (req, res) => {
     let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' AND simpanan.id_nasabah = '${id_nasabah}' `
 
     if (status == 'belum-lunas') {
-        condition = condition + `simpanan.status = 'BELUM LUNAS' `
-    }
-
-    if (bulan != null) {
-        condition = condition + `simpanan.bulan = ${bulan} `
-    }
-
-    if (tahun != null) {
-        condition = condition + `simpanan.tahun = ${tahun} `
+        condition = condition + `AND simpanan.status = 'BELUM LUNAS'`
     }
 
     if (search != null) {
-        condition += ` AND (user.nama LIKE '%${search}%' OR simpanan.nomor_simpanan LIKE '%${search}%')`;
+        condition += `AND (simpanan.tahun LIKE '%${search}%' OR simpanan.bulan LIKE '%${search}%')`;
       }
-
-
+      
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
 
     const handle_response = async (err, result) => {
@@ -60,13 +51,12 @@ const simpanan_list = async (req, res) => {
 
 const simpanan_parent_list = async (req, res) => {
     const { search = null } = req.query;
-
-    const query = `SELECT MAX(simpanan.id_nasabah) AS id_nasabah, user.nama, SUM(simpanan.nominal) AS nominal, simpanan.tahun FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib' GROUP BY simpanan.tahun, user.nama`
+    let condition = ""
 
     if (search != null) {
-        condition = condition + ` AND (user.nama LIKE '%${search}%') `;
+        condition = condition + `AND (user.nama LIKE '%${search}%') `;
     }
-
+    const query = `SELECT MAX(simpanan.id_nasabah) AS id_nasabah, user.nama, SUM(simpanan.nominal) AS nominal, simpanan.tahun FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib' ${condition} GROUP BY simpanan.tahun, user.nama`
     const handle_response = async (err, result) => {
         if (!err) {
             if (result.length > 0) {

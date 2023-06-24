@@ -3,10 +3,10 @@ import connection from '../../../config/index.js'
 const simpanan_list = async (req, res) => {
     const { search } = req.query
 
-    let condition = `WHERE simpanan.tipe_simpanan = 'Pokok' `
+    let condition = `WHERE simpanan.tipe_simpanan = 'Pokok'`
 
     if (search) {
-        condition += `AND (simpanan.id_anggota LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
+        condition += `AND (simpanan.id_nasabah LIKE '%${search}%' OR user.nama LIKE '%${search}%')`;
     }
 
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
