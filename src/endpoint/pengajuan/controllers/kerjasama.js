@@ -15,7 +15,7 @@ async function deleteImage(path) {
 }
 
 const pengajuan_list = async (req, res) => {
-    const { type } = req.query
+    const { type, search } = req.query
     const { authorization: raw_token } = req.headers
 
     const token = raw_token.split(' ')[1]
@@ -41,6 +41,11 @@ const pengajuan_list = async (req, res) => {
             })
         }
     })
+
+    //Fix Search Query
+    if (search) {
+        condition += `AND (pengajuan.id_pengajuan LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
+    }
 
     const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
 

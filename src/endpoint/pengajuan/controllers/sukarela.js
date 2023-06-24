@@ -4,12 +4,17 @@ import { generateSimpananSukarela } from '../../simpanan/controllers/function.js
 import { uid } from 'uid';
 
 const pengajuan_list = async (req, res) => {
-    const { type } = req.query
+    const { type, search } = req.query
     const { authorization: raw_token } = req.headers
 
     const token = raw_token.split(' ')[1]
 
     let condition = `WHERE pengajuan.tipe_pengajuan = 'SUKARELA' `
+
+    //Fix search query
+    if (search) {
+        condition += `AND (pengajuan.id_pengajuan LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
+    }
 
     verify_access_token(token, async (error, result) => {
         if (!error) {

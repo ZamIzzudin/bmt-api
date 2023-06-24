@@ -6,8 +6,14 @@ import { uid } from 'uid';
 
 const angsuran_list = async (req, res) => {
     const { id_proses } = req.params
+    const { search } = req.query
 
     const query = `SELECT * FROM angsuran WHERE id_proses = ?`
+
+    //Fix search query
+    if (search) {
+        query += ` AND (id_angsuran LIKE '%${search}%')`;
+    }
 
     const handle_response = async (err, result) => {
         if (!err) {

@@ -2,7 +2,7 @@ import connection from '../../../config/index.js'
 import { verify_access_token } from '../../../utils/jwt.js'
 
 const simpanan_list = async (req, res) => {
-    const { type } = req.query
+    const { type, search } = req.query
     const { authorization: raw_token } = req.headers
 
     const token = raw_token.split(' ')[1]
@@ -29,7 +29,11 @@ const simpanan_list = async (req, res) => {
         }
     })
 
-
+    //Fix search query
+    if (search) {
+        condition += `AND (simpanan.id_anggota LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
+    }
+    
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
 
     const handle_response = async (err, result) => {

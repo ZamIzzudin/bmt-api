@@ -3,12 +3,17 @@ import { verify_access_token } from '../../../utils/jwt.js'
 import { uid } from 'uid';
 
 const kas_list = async (req, res) => {
-    const { type } = req.query
+    const { type, search } = req.query
 
     let query = `SELECT * FROM kas`
 
     if (type != null) {
         query = query + ` WHERE jenis_transaksi = '${type.toUpperCase()}'`
+    }
+
+    //Fix search query
+    if (search) {
+        query = query + ` AND id_transaksi LIKE '%${search}%'`
     }
 
     const handle_response = async (err, result) => {

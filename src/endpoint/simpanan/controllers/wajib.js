@@ -4,7 +4,7 @@ import { kas_masuk } from '../../kas/controllers/function.js'
 
 
 const simpanan_list = async (req, res) => {
-    const { status = null, bulan = null, tahun = null } = req.query
+    const { status = null, bulan = null, tahun = null, search = null } = req.query
     const { id_nasabah } = req.params
 
     let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' AND simpanan.id_nasabah = '${id_nasabah}' `
@@ -20,6 +20,11 @@ const simpanan_list = async (req, res) => {
     if (tahun != null) {
         condition = condition + `simpanan.tahun = ${tahun} `
     }
+
+    if (search != null) {
+        condition += ` AND (user.nama LIKE '%${search}%' OR simpanan.nomor_simpanan LIKE '%${search}%')`;
+      }
+
 
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
 
@@ -54,8 +59,13 @@ const simpanan_list = async (req, res) => {
 }
 
 const simpanan_parent_list = async (req, res) => {
+    const { search = null } = req.query;
 
     const query = `SELECT MAX(simpanan.id_nasabah) AS id_nasabah, user.nama, SUM(simpanan.nominal) AS nominal, simpanan.tahun FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah WHERE tipe_simpanan = 'Wajib' GROUP BY simpanan.tahun, user.nama`
+
+    if (search != null) {
+        condition = condition + ` AND (user.nama LIKE '%${search}%') `;
+    }
 
     const handle_response = async (err, result) => {
         if (!err) {
@@ -88,7 +98,7 @@ const simpanan_parent_list = async (req, res) => {
 }
 
 const belum_lunas_list = async (req, res) => {
-    const { bulan = null, tahun = null } = req.query
+    const { bulan = null, tahun = null, search = null } = req.query
 
     let condition = `WHERE simpanan.tipe_simpanan = 'Wajib' AND simpanan.status = 'BELUM LUNAS' `
 
@@ -98,6 +108,10 @@ const belum_lunas_list = async (req, res) => {
 
     if (tahun != null) {
         condition = condition + `AND simpanan.tahun = '${tahun}' `
+    }
+
+    if (search != null) {
+        condition = condition + ` AND (user.nama LIKE '%${search}%' OR simpanan.nomor_simpanan LIKE '%${search}%')`;
     }
 
     const query = `SELECT simpanan.*, user.nama FROM simpanan INNER JOIN user ON user.id_user=simpanan.id_nasabah ${condition}`
