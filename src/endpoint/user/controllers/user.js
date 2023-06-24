@@ -3,7 +3,7 @@ import { encrpyt_one_way } from '../../../utils/crypt.js'
 import connection from '../../../config/index.js'
 
 const user_list = async (req, res) => {
-    const { type } = req.query
+    const { type, search } = req.query
     const { authorization: raw_token } = req.headers
 
     const token = raw_token.split(' ')[1]
@@ -11,6 +11,11 @@ const user_list = async (req, res) => {
     let condition = "role = 'nasabah'"
     if (type === 'pengelola') {
         condition = "role = 'admin' OR role = 'admin_master' OR role = 'officer' OR role = 'manager'"
+    }
+
+    //Fix search query
+      if (search) {
+    condition += ` AND (id_user LIKE '%${search}%' or username LIKE '%${search}%' OR nama LIKE '%${search}%' OR nik LIKE '%${search}%')`;
     }
 
     const query = 'SELECT id_user, created_at,username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role FROM user WHERE ' + condition
