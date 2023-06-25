@@ -31,4 +31,25 @@ async function kas_keluar(nominal, catatan) {
     })
 }
 
-export { kas_masuk, kas_keluar }
+async function addSimpananToKas(id_nasabah, nominal){
+    const queryfind = `SELECT * FROM simpanan WHERE id_nasabah = '${id_nasabah}' AND tipe_simpanan = 'Sukarela' AND produk_simpanan = 'Wadiah'`
+    const  handleFind =(err, result)=> {
+        const newNominal = nominal + result[0].nominal
+        const queryUpdate = `UPDATE simpanan SET nominal = ? WHERE id_simpanan = '${result[0].id_simpanan}'`
+        console.error(err)
+        connection.getConnection(async (err, conn) => {
+            await conn.query(queryUpdate, [newNominal], (error, result) => {
+                if (error) {
+                    console.log(error)
+                }
+            })
+            conn.release();
+        })
+    }
+    connection.getConnection(async (err, conn) => {
+        await conn.query(queryfind, [], handleFind)
+        conn.release();
+    })
+}
+
+export { kas_masuk, kas_keluar, addSimpananToKas }

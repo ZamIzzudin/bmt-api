@@ -5,20 +5,20 @@ import { uid } from 'uid';
 const kas_list = async (req, res) => {
     const { type, search } = req.query
 
-    let query = `SELECT * FROM kas`
+    let query = `SELECT * FROM kas ORDER BY created_at DESC`
 
     if (type != null) {
-        query = query + ` WHERE jenis_transaksi = '${type.toUpperCase()}'`
+        query = `SELECT * FROM kas WHERE jenis_transaksi = '${type.toUpperCase()}' ORDER BY created_at DESC`
     }
 
     //Fix search query
     if (!type) {
         if(search){
-            query = query + ` WHERE id_transaksi LIKE '%${search}%'`
+            query = `SELECT * FROM kas WHERE id_transaksi LIKE '%${search}%' ORDER BY created_at DESC`
         }
     } else if(type){
         if(search){
-            query = query + `AND id_transaksi LIKE '%${search}%'`
+            query = query + `SELECT * FROM kas WHERE jenis_transaksi = '${type.toUpperCase()}' AND id_transaksi LIKE '%${search}%' ORDER BY created_at DESC`
         }
     }
 
