@@ -8,14 +8,28 @@ const user_list = async (req, res) => {
 
     const token = raw_token.split(' ')[1]
 
-    let condition = "role = 'nasabah'"
-    if (type === 'pengelola') {
-        condition = "role = 'admin' OR role = 'admin_master' OR role = 'officer' OR role = 'manager'"
-    }
+    //Old code
+    // let condition = "role = 'nasabah'"
+    // if (type === 'pengelola') {
+    //     condition = "role = 'admin' OR role = 'admin_master' OR role = 'officer' OR role = 'manager'"
+    // }
 
+    //Updated code
+    let condition = "";
+
+    if (type === 'pengelola') {
+      condition = "role IN ('admin', 'admin_master', 'officer', 'manager')";
+    } else {
+      condition = "role = 'nasabah'";
+    }
+  
     //Fix search query
-      if (search) {
-    condition += ` AND (id_user LIKE '%${search}%' or username LIKE '%${search}%' OR nama LIKE '%${search}%' OR nik LIKE '%${search}%')`;
+    if (search) {
+      if (type === 'pengelola') {
+        condition += ` AND (id_user LIKE '%${search}%' or username LIKE '%${search}%' OR nama LIKE '%${search}%' OR role LIKE '%${search}%')`;
+      } else {
+        condition += ` AND (id_user LIKE '%${search}%' or username LIKE '%${search}%' OR nama LIKE '%${search}%')`;
+      }
     }
 
     const query = 'SELECT id_user, created_at,username, nama, nik, jenis_kelamin, no_hp, alamat, pekerjaan, no_rekening, status_perkawinan, email, role FROM user WHERE ' + condition
