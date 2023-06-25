@@ -4,69 +4,71 @@ import { generateSimpananSukarela } from '../../simpanan/controllers/function.js
 import { uid } from 'uid';
 
 const pengajuan_list = async (req, res) => {
-    const { type, search } = req.query
-    const { authorization: raw_token } = req.headers
-
-    const token = raw_token.split(' ')[1]
-
-    let condition = `WHERE pengajuan.tipe_pengajuan = 'SUKARELA' `
-
-    //Fix search query
-    if (search) {
-        condition += `AND (pengajuan.id_pengajuan LIKE '%${search}%' OR user.nama LIKE '%${search}%') `;
-    }
-
+    const { type } = req.query;
+    const { authorization: raw_token } = req.headers;
+  
+    const token = raw_token.split(' ')[1];
+  
+    let condition = `WHERE pengajuan.tipe_pengajuan = 'SUKARELA' `;
+  
     verify_access_token(token, async (error, result) => {
-        if (!error) {
-            if (result.role.toLowerCase() === 'nasabah' && type === 'pengelola') {
-                return res.status(405).json({
-                    status: 405,
-                    message: 'unathorized',
-                    info: 'you dont have valid access'
-                })
-            } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
-                condition = condition + `AND pengajuan.id_nasabah = '${result.id}'`
-            }
-        } else {
-            return res.status(405).json({
-                status: 403,
-                message: 'unathorized',
-                info: 'token not found'
-            })
+      if (!error) {
+        if (result.role.toLowerCase() === 'nasabah' && type === 'pengelola') {
+          return res.status(405).json({
+            status: 405,
+            message: 'unauthorized',
+            info: 'you don\'t have valid access'
+          });
+        } else if (result.role.toLowerCase() === 'nasabah' && type === 'nasabah') {
+          condition = condition + `AND pengajuan.id_nasabah = '${result.id}'`;
         }
-    })
-
-    const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`
-
-    const handle_response = async (err, result) => {
-        if (!err) {
-            if (result.length > 0) {
-                res.json({
-                    status: 200,
-                    message: `Success Get Pengajuan List`,
-                    data: result
-                })
-            } else {
-                res.status(400).json({
-                    status: 400,
-                    message: 'failed',
-                    info: "Pengajuan Not Found"
-                })
-            }
-        } else {
+      } else {
+        return res.status(403).json({
+          status: 403,
+          message: 'unauthorized',
+          info: 'token not found'
+        });
+      }
+  
+      const query = `SELECT pengajuan.*, user.nama FROM pengajuan INNER JOIN user ON user.id_user=pengajuan.id_nasabah ${condition}`;
+  
+      connection.getConnection(async (err, conn) => {
+        if (err) {
+          return res.status(500).json({
+            status: 500,
+            message: 'failed',
+            info: err
+          });
+        }
+  
+        conn.query(query, [], (err, result) => {
+          conn.release();
+  
+          if (err) {
+            return res.status(500).json({
+              status: 500,
+              message: 'failed',
+              info: err
+            });
+          }
+  
+          if (result.length > 0) {
+            res.json({
+              status: 200,
+              message: 'Success Get Pengajuan List',
+              data: result
+            });
+          } else {
             res.status(404).json({
-                status: 404,
-                message: 'failed',
-                info: err
-            })
-        }
-    }
-
-    connection.getConnection(async (err, conn) => {
-        await conn.query(query, [], handle_response)
-        conn.release();
-    })
-}
+              status: 404,
+              message: 'failed',
+              info: 'Pengajuan Not Found'
+            });
+          }
+        });
+      });
+    });
+  };
 
 const create_pengajuan = async (req, res) => {
     const id_pengajuan = uid(16)
