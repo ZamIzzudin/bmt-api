@@ -1,7 +1,7 @@
 import { verify_access_token } from '../../../utils/jwt.js'
 import cloudinary from '../../../utils/cloudinary.js'
 import connection from '../../../config/index.js'
-import { addSimpananToKas, kas_keluar } from '../../kas/controllers/function.js'
+import { addSimpananToKas, kas_keluar,kas_masuk } from '../../kas/controllers/function.js'
 import { generatePembiayaan } from '../../pembiayaan/controllers/function.js'
 import { uid } from 'uid';
 
@@ -224,6 +224,7 @@ const approve_pengajuan = async (req, res) => {
             const catatan = `Persetujuan Pengajuan Pembiayaan Jual Beli Nasabah (${temp.id_nasabah})`
             generatePembiayaan(temp.id_nasabah, temp.produk_pengajuan, temp.tipe_pengajuan, temp.durasi, temp.nominal_awal, temp.nominal_akhir)
             kas_keluar(temp.nominal_awal, catatan)
+            kas_masuk(temp.nominal_awal, catatan)
             addSimpananToKas(temp.id_nasabah, temp.nominal_awal)
 
             return res.status(200).json({
