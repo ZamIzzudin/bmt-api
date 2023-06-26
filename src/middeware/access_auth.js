@@ -219,7 +219,7 @@ const admins = (req, res, next) => {
                     message: 'failed',
                     info: 'expired token'
                 });
-            } else if (decoded.role.toLowerCase() !== 'admin' && decoded.role.toLowerCase() !== 'admin_master') {
+            } else if (decoded.role.toLowerCase() !== 'admin' && decoded.role.toLowerCase() !== 'admin_master' && decoded.role.toLowerCase() !== 'manager' && decoded.role.toLowerCase() !== 'officer') {
                 return res.status(401).json({
                     status: 401,
                     message: 'failed',
